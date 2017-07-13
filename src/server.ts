@@ -5,7 +5,7 @@
 import 'angular2-universal-polyfills';
 import 'ts-helpers';
 import './__workaround.node'; // temporary until 2.1.1 things are patched in Core
-
+import * as fs from 'fs';
 import * as path from 'path';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
@@ -82,11 +82,15 @@ function ngApp(req, res) {
   }
 
   Zone.current.fork({ name: 'CSR fallback', onHandleError }).run(() => {
+    fs.readFile('./src/index.html', function (err, data) {
+      console.error(data.toString());
+    });
+    
     res.render('index', {
       req,
       res,
       // time: true, // use this to determine what part of your app is slow only in development
-      preboot: false,
+      preboot: {appRoot: 'app'},
       baseUrl: '/',
       requestUrl: req.originalUrl,
       originUrl: `http://localhost:${ app.get('port') }`
